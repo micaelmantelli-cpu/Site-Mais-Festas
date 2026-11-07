@@ -116,6 +116,8 @@ header .btn{min-height:42px;padding:0 20px;font-size:.92rem}
 .hero{padding-block:clamp(40px,7vw,96px);background:radial-gradient(60% 70% at 85% 30%,#2a1d0c 0%,transparent 70%)}
 .hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(32px,6vw,88px);align-items:center}
 .hero h1{margin-bottom:24px}
+.hero-cta{display:none}
+@media(max-width:860px){.hero-cta{display:flex;width:100%;margin-top:28px;min-height:58px;font-size:1.05rem}}
 .caminho{list-style:none;margin:28px 0 0;padding:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;counter-reset:c;font-weight:800;font-size:.95rem}
 .caminho li{counter-increment:c;display:inline-flex;align-items:center;gap:8px;padding:8px 14px 8px 8px;border:1px solid var(--linha);border-radius:999px;background:rgba(26,21,16,.7)}
 .caminho li::before{content:counter(c);display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--ouro);color:#1a1200;font-size:.8rem}
@@ -322,6 +324,7 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
         <span class="olho">Para donos de buffet e espaços de festas</span>
         <h1>Seu espaço com a agenda cheia de festas.</h1>
         <p class="lead">Levamos famílias com perfil de compra até o seu WhatsApp, filtramos quem só pede preço e ajudamos sua equipe a agendar a visita e fechar a festa.</p>
+        <a class="btn btn-ouro hero-cta" href="https://form.respondi.app/nUsJDYIP" target="_blank" rel="noopener">Solicitar Diagnóstico Gratuito</a>
         <ol class="caminho" aria-label="O caminho que a gente cuida">
           <li>Contato qualificado no WhatsApp</li>
           <li>Visita agendada</li>
