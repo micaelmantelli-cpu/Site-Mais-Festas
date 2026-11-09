@@ -151,7 +151,6 @@ section{padding-block:clamp(64px,9vw,120px)}
 .vaga b{color:var(--texto);font-size:1rem}
 
 /* 3. depoimentos */
-.videos{display:grid;grid-template-columns:repeat(3,minmax(0,300px));justify-content:center;gap:clamp(20px,4vw,48px);margin-bottom:clamp(40px,6vw,64px)}
 .dep{margin:0;display:flex;flex-direction:column;gap:14px}
 .dep-video{position:relative;aspect-ratio:9/16;border-radius:var(--raio);overflow:hidden;background:#000;border:1px solid var(--linha)}
 .dep-video video{width:100%;height:100%;object-fit:cover}
@@ -162,7 +161,6 @@ section{padding-block:clamp(64px,9vw,120px)}
 .dep-video.tocando button{display:none}
 .dep figcaption strong{display:block;font-size:1.05rem;line-height:1.3;margin-bottom:4px}
 .dep figcaption span{color:var(--suave);font-size:.9rem}
-.cases{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .case{padding:28px;border:1px solid var(--linha);border-radius:var(--raio);background:var(--carvao)}
 .case .olho{margin-bottom:10px}
 .case strong{display:block;font-size:clamp(1.5rem,2.6vw,2rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;color:var(--ouro);margin-bottom:10px}
@@ -173,19 +171,11 @@ section{padding-block:clamp(64px,9vw,120px)}
 .case-logo.redondo{width:76px;border-radius:50%}
 .case-logo-texto{display:block;width:96px;height:auto;border-radius:8px;margin-bottom:14px}
 .case-logo{position:absolute;top:14px;left:14px;width:96px;height:auto;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+.trilho.dep-trilho{grid-auto-columns:280px;align-items:start}
+.dep-trilho>*{scroll-snap-align:start}
+.dep-trilho .case{height:auto}
 .arraste{display:none;margin:12px 0 0;color:var(--suave);font-size:.85rem}
-@media(max-width:1000px){
-  .cases{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:46%;align-items:start;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px}
-  .cases>*{scroll-snap-align:start}
-  .arraste-cases{display:block}
-}
-@media(max-width:760px){
-  .videos{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:72%;justify-content:start;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;margin-bottom:0}
-  .videos>*{scroll-snap-align:start}
-  .arraste{display:block}
-  .arraste-videos{margin-bottom:44px}
-  .cases{grid-auto-columns:86%}
-}
+@media(max-width:600px){.trilho.dep-trilho{grid-auto-columns:78%}.arraste{display:block}}
 
 /* 4. quem somos */
 .quem .grade{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(32px,6vw,88px);align-items:start}
@@ -358,27 +348,18 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
   <!-- 3. DEPOIMENTOS -->
   <section class="alt" id="depoimentos">
     <div class="wrap">
-      <div class="topo-sec">
-        <span class="olho">Resultados</span>
-        <h2>Donos de buffet e espaços de festas que já vendem mais.</h2>
+      <div class="carrossel-topo topo-sec" style="max-width:none">
+        <div>
+          <span class="olho">Resultados</span>
+          <h2>Donos de buffet e espaços de festas que já vendem mais.</h2>
+        </div>
+        <div class="setas">
+          <button type="button" data-alvo="trilho-dep" data-seta="-1" aria-label="Anterior">←</button>
+          <button type="button" data-alvo="trilho-dep" data-seta="1" aria-label="Próximo">→</button>
+        </div>
       </div>
-      <!-- depoimentos em vídeo: cliente real, ambiente real, sem roteiro -->
-      <div class="videos">
-        <figure class="dep">
-          <div class="dep-video"><video preload="none" playsinline poster="assets/depoimentos/spazio-deline.jpg" src="assets/depoimentos/spazio-deline.mp4"></video><button type="button" aria-label="Assistir ao depoimento do Spazio Deline"><i></i></button></div>
-          <figcaption><strong>De 5 a 7 para no mínimo 11 contratos por mês</strong><span>Isabel · Spazio Deline, Caieiras (SP)</span></figcaption>
-        </figure>
-        <figure class="dep">
-          <div class="dep-video"><video preload="none" playsinline poster="assets/depoimentos/ameliane.jpg" src="assets/depoimentos/ameliane.mp4"></video><button type="button" aria-label="Assistir ao depoimento de Ameliane e Ana Amélia"><i></i></button></div>
-          <figcaption><strong>Recorde de 5 visitas agendadas em um único dia</strong><span>Ameliane e Ana Amélia · salão de festas em Cajuru (SP)</span></figcaption>
-        </figure>
-        <figure class="dep">
-          <div class="dep-video"><video preload="none" playsinline poster="assets/depoimentos/rafa.jpg" src="assets/depoimentos/rafa.mp4"></video><button type="button" aria-label="Assistir ao depoimento do Rafa"><i></i></button></div>
-          <figcaption><strong>R$ 183 mil em festas com R$ 1,5 mil em anúncios</strong><span>Rafa · dono de buffet</span></figcaption>
-        </figure>
-      </div>
-      <p class="arraste arraste-videos" aria-hidden="true">Arraste para o lado para ver mais →</p>
-      <div class="cases">
+      <!-- depoimentos em vídeo (cliente real, sem roteiro) e cases, num carrossel só -->
+      <div class="trilho dep-trilho" id="trilho-dep" tabindex="0" aria-label="Resultados de clientes">
         <div class="case case-foto">
           <img src="assets/vem-pra-ka.jpg" alt="Karina, dona do Vem Pra Ká Espaço Kids e Eventos" width="640" height="490" loading="lazy">
           <img class="case-logo redondo" src="assets/vem-pra-ka-logo.png" alt="Vem Pra Ká Espaço Kids e Eventos" width="180" height="180" loading="lazy">
@@ -388,6 +369,14 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
             <p>Vendeu mais de R$ 100 mil já no primeiro mês com a Mais Festas e R$ 114 mil no segundo.</p>
           </div>
         </div>
+        <figure class="dep">
+          <div class="dep-video"><video preload="none" playsinline poster="assets/depoimentos/spazio-deline.jpg" src="assets/depoimentos/spazio-deline.mp4"></video><button type="button" aria-label="Assistir ao depoimento do Spazio Deline"><i></i></button></div>
+          <figcaption><strong>Mais que dobrou: de 7 para 15 contratos em um mês</strong><span>Isabel · Spazio Deline, Caieiras (SP)</span></figcaption>
+        </figure>
+        <figure class="dep">
+          <div class="dep-video"><video preload="none" playsinline poster="assets/depoimentos/ameliane.jpg" src="assets/depoimentos/ameliane.mp4"></video><button type="button" aria-label="Assistir ao depoimento de Ameliane e Ana Amélia"><i></i></button></div>
+          <figcaption><strong>Recorde de 5 visitas agendadas em um único dia</strong><span>Ameliane e Ana Amélia · salão de festas em Cajuru (SP)</span></figcaption>
+        </figure>
         <div class="case case-foto">
           <img src="assets/be-happy.jpg" alt="Donos do Be Happy Eventos" width="392" height="300" loading="lazy">
           <div>
@@ -397,6 +386,10 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
             <p>Vendeu R$ 200 mil em festas em um único mês com a Mentoria Mais Festas.</p>
           </div>
         </div>
+        <figure class="dep">
+          <div class="dep-video"><video preload="none" playsinline poster="assets/depoimentos/rafa.jpg" src="assets/depoimentos/rafa.mp4"></video><button type="button" aria-label="Assistir ao depoimento do Rafa"><i></i></button></div>
+          <figcaption><strong>R$ 183 mil em festas com R$ 1,5 mil em anúncios</strong><span>Rafa · dono de buffet</span></figcaption>
+        </figure>
         <div class="case case-foto">
           <img src="assets/castelo-ribeirao.jpg" alt="Fachada do Castelo dos Sonhos Buffet em Ribeirão Preto" width="640" height="490" loading="lazy">
           <div>
@@ -407,7 +400,7 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
           </div>
         </div>
       </div>
-      <p class="arraste arraste-cases" aria-hidden="true">Arraste para o lado para ver mais →</p>
+      <p class="arraste" aria-hidden="true">Arraste para o lado para ver mais →</p>
       <div class="cta-sec">
         <a class="btn btn-ouro" href="https://form.respondi.app/nUsJDYIP" target="_blank" rel="noopener">Solicitar Diagnóstico Gratuito</a>
         <span>Seu espaço pode ser o próximo resultado.</span>
@@ -486,8 +479,8 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
           <h2>Mais contatos certos, mais festas fechadas.</h2>
         </div>
         <div class="setas">
-          <button type="button" data-seta="-1" aria-label="Anterior">←</button>
-          <button type="button" data-seta="1" aria-label="Próximo">→</button>
+          <button type="button" data-alvo="trilho" data-seta="-1" aria-label="Anterior">←</button>
+          <button type="button" data-alvo="trilho" data-seta="1" aria-label="Próximo">→</button>
         </div>
       </div>
       <div class="trilho" id="trilho" tabindex="0" aria-label="O que você recebe">
@@ -649,17 +642,19 @@ if ("IntersectionObserver" in window) {
 } else trilha.classList.add("ativa");
 
 // entregáveis: setas do carrossel
-const trilho = document.getElementById("trilho");
-const setas = document.querySelectorAll("[data-seta]");
-const passoCarrossel = () => trilho.querySelector(".entrega").offsetWidth + 20;
-setas.forEach(b => b.addEventListener("click", () => trilho.scrollBy({ left: passoCarrossel() * Number(b.dataset.seta) })));
-const atualizaSetas = () => {
-  setas[0].disabled = trilho.scrollLeft < 4;
-  setas[1].disabled = trilho.scrollLeft + trilho.clientWidth >= trilho.scrollWidth - 4;
-};
-trilho.addEventListener("scroll", atualizaSetas, { passive: true });
-addEventListener("resize", atualizaSetas);
-atualizaSetas();
+document.querySelectorAll(".trilho[id]").forEach(t => {
+  const bts = document.querySelectorAll(`[data-alvo="${t.id}"]`);
+  if (!bts.length) return;
+  const passo = () => t.firstElementChild.offsetWidth + 20;
+  bts.forEach(b => b.addEventListener("click", () => t.scrollBy({ left: passo() * Number(b.dataset.seta) })));
+  const atualiza = () => {
+    bts[0].disabled = t.scrollLeft < 4;
+    bts[1].disabled = t.scrollLeft + t.clientWidth >= t.scrollWidth - 4;
+  };
+  t.addEventListener("scroll", atualiza, { passive: true });
+  addEventListener("resize", atualiza);
+  atualiza();
+});
 
 // depoimentos: toca um por vez, só carrega quando clicam
 const deps = [...document.querySelectorAll(".dep-video")];
