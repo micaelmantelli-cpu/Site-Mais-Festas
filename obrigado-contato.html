@@ -28,17 +28,37 @@ p{color:#d9d1c2;margin:0 auto 14px;max-width:52ch}
 .passos{list-style:none;padding:0;margin:28px auto 0;display:grid;gap:12px;text-align:left;max-width:440px}
 .passos li{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid var(--linha);border-radius:14px;background:var(--brasa)}
 .passos b{display:grid;place-items:center;flex:none;width:28px;height:28px;border-radius:50%;background:var(--ouro);color:#1a1200;font-size:.85rem}
+.etapa{display:inline-block;color:var(--ouro);font-weight:800;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}
+.btn-zap{min-height:64px;padding:0 32px;font-size:1.1rem;box-shadow:0 12px 32px -8px rgba(37,211,102,.55);animation:pulsa 2s ease-in-out infinite}
+@keyframes pulsa{50%{box-shadow:0 12px 40px -4px rgba(37,211,102,.85)}}
+@media(prefers-reduced-motion:reduce){.btn-zap{animation:none}}
+.nota{font-size:.88rem;color:var(--suave);margin-top:10px}
+.passos li.agora{border-color:#25D366}
+.passos li.agora b{background:#25D366;color:#06210f}
+.passos small{display:block;color:#25D366;font-weight:800;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase}
 footer{text-align:center;color:var(--suave);font-size:.85rem;padding:0 20px 40px}
 </style>
 </head>
-<body>
+<body data-abertura="Acabei de preencher o formulário no site da Mais Festas e quero saber o melhor caminho para o meu negócio.">
 <header><a href="./"><img src="assets/logo.webp" alt="Mais Festas" width="55" height="42"></a></header>
 <main>
-  <span class="ok" aria-hidden="true"></span>
-  <h1>Recebemos seus dados!</h1>
-  <p>Nossa equipe vai analisar as informações do seu negócio e entrar em contato pelo WhatsApp com o melhor caminho para o seu momento.</p>
-  <a class="btn btn-zap" href="https://wa.me/5517991831471?text=Ol%C3%A1!%20Acabei%20de%20preencher%20o%20formul%C3%A1rio%20do%20site%20da%20Mais%20Festas." target="_blank" rel="noopener">Falar com a equipe no WhatsApp</a>
+  <span class="etapa">Último passo</span>
+  <h1>Falta só um passo</h1>
+  <p>Envie a mensagem no nosso WhatsApp para a equipe da Mais Festas analisar o seu negócio e indicar o melhor caminho para o seu momento.</p>
+  <a class="btn btn-zap" data-zap href="https://wa.me/5517991831471" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="26" height="26"><path d="M12.04 2a9.9 9.9 0 0 0-8.5 14.9L2 22l5.25-1.37A9.9 9.9 0 1 0 12.04 2Zm4.44 12.03c-.24-.12-1.44-.71-1.66-.79-.22-.08-.39-.12-.55.12-.16.24-.63.79-.77.95-.14.16-.28.18-.52.06-.24-.12-1.03-.38-1.96-1.21-.72-.65-1.21-1.45-1.35-1.69-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.32-.75-1.81-.2-.47-.4-.41-.55-.42h-.47c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.69 2.58 4.1 3.62.57.25 1.02.4 1.37.51.58.18 1.1.16 1.51.1.46-.07 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28Z"/></svg>Enviar mensagem no WhatsApp</a>
+  <p class="nota">A mensagem já vai escrita, é só tocar em enviar.</p>
 </main>
 <footer>© 2026 Mais Festas · CNPJ 69.536.229/0001-41</footer>
+<script>
+// monta a mensagem do WhatsApp com o nome e o Instagram preenchidos no formulário
+(function () {
+  let lead = {};
+  try { lead = JSON.parse(sessionStorage.getItem("mf_lead")) || {}; } catch (e) {}
+  const partes = ["Olá! __ABERTURA__"];
+  if (lead.nome) partes.push("Meu nome é " + lead.nome + (lead.instagram ? " (" + lead.instagram + ")" : "") + ".");
+  const msg = partes.join(" ").replace("__ABERTURA__", document.body.dataset.abertura);
+  document.querySelectorAll("[data-zap]").forEach(a => a.href = "https://wa.me/5517991831471?text=" + encodeURIComponent(msg));
+})();
+</script>
 </body>
 </html>

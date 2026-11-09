@@ -740,6 +740,7 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
     try {
       await fetch(ENDPOINT_LEADS, { method: "POST", mode: "no-cors", body: new URLSearchParams(dados) });
       if (window.fbq) fbq("track", "Lead", { classificacao: dados.classificacao });
+      try { sessionStorage.setItem("mf_lead", JSON.stringify({ nome: dados.nome, instagram: dados.instagram })); } catch (e) {}
       // cada grupo vai para a sua página de obrigado
       const OBRIGADO = { A: "obrigado.html", B: "obrigado.html", C: "obrigado.html", D: "obrigado-contato.html", E: "obrigado-conteudo.html" };
       location.href = OBRIGADO[dados.classificacao] || "obrigado.html";
