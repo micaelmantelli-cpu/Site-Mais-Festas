@@ -681,10 +681,17 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
   const campoEspaco = document.getElementById("campo-espaco");
   const ehSalao = () => SALOES.includes(val("segmento"));
   const temEspaco = () => val("possui_espaco") === "Sim" || ehSalao();
-  // pergunta dos R$ 2.500: fatura abaixo de R$ 10 mil e não é salão de festa infantil nem salão de eventos
-  const precisaInvest = () => faixa() > -1 && faixa() <= 1 && val("segmento") !== "" && !ehSalao();
+  // pergunta dos R$ 2.500 (quem não está qualificado):
+  //  - fatura abaixo de R$ 10 mil e não é salão de festa infantil nem salão de eventos, ou
+  //  - não tem espaço e fatura abaixo de R$ 30 mil
+  const precisaInvest = () => {
+    const fx = faixa();
+    if (fx < 0 || val("segmento") === "") return false;
+    if (fx <= 1 && !ehSalao()) return true;
+    return val("possui_espaco") === "Não" && !temEspaco() && fx <= 2;
+  };
   const classificar = () => {
-    // fatura abaixo de R$ 10 mil e não é salão: D se tem os R$ 2.500, E se não tem
+    // não qualificado (ver precisaInvest): D se tem os R$ 2.500, E se não tem
     if (precisaInvest()) return val("investiria_2500") === "Sim" ? "D" : "E";
     if (temEspaco() && faixa() >= 4) return "A";
     if (temEspaco() && faixa() === 3) return "B";
