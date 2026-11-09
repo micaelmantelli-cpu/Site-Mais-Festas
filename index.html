@@ -78,6 +78,7 @@
   --pad:clamp(20px,5vw,72px);
 }
 *,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth;scroll-padding-top:80px}
 body{margin:0;background:var(--carvao);color:var(--texto);font:400 1.0625rem/1.65 "Plus Jakarta Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 img,video{display:block;max-width:100%}
@@ -128,10 +129,30 @@ header .btn{min-height:42px;padding:0 20px;font-size:.92rem}
 .cartao-diag{background:var(--brasa);border:1px solid var(--linha);border-radius:24px;padding:clamp(24px,3vw,36px);box-shadow:0 30px 80px -20px rgba(255,197,42,.18)}
 .cartao-diag h2{font-size:clamp(1.5rem,2.6vw,1.9rem);margin-bottom:14px}
 .cartao-diag p{color:var(--suave)}
-.checks{list-style:none;margin:22px 0 26px;padding:0;display:grid;gap:12px}
-.checks li{position:relative;padding-left:30px;color:#d9d1c2}
-.checks li::before{content:"";position:absolute;left:0;top:.35em;width:18px;height:18px;border-radius:50%;background:var(--ouro)}
-.checks li::after{content:"";position:absolute;left:6px;top:calc(.35em + 4px);width:5px;height:9px;border:solid #1a1200;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.form-diag{display:grid;gap:14px;margin-top:20px}
+.form-diag label{display:grid;gap:6px;font-weight:500;font-size:.92rem;color:#d9d1c2}
+.form-diag input:not([type=radio]),.form-diag select{width:100%;min-height:50px;padding:0 14px;border-radius:12px;border:1px solid var(--linha);background:var(--carvao);color:var(--texto);font:inherit;font-size:1rem}
+.form-diag select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--suave) 50%),linear-gradient(135deg,var(--suave) 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 15px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:36px}
+.form-diag select:invalid{color:#6f6657}
+.form-diag input::placeholder{color:#6f6657}
+.form-diag input:focus,.form-diag select:focus{border-color:var(--ouro);outline:none;box-shadow:0 0 0 3px rgba(255,197,42,.25)}
+.form-diag .invalido{border-color:var(--balao)!important}
+.form-diag fieldset{border:0;margin:0;padding:0;display:grid;gap:6px}
+.form-diag legend{font-weight:500;font-size:.92rem;color:#d9d1c2;padding:0;margin-bottom:6px}
+.opcoes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opcoes label{display:block;position:relative}
+.opcoes input{position:absolute;opacity:0;inset:0}
+.opcoes span{display:grid;place-items:center;min-height:46px;border:1px solid var(--linha);border-radius:12px;background:var(--carvao);cursor:pointer;font-weight:800;color:var(--texto);transition:border-color .15s,background .15s}
+.opcoes input:checked+span{border-color:var(--ouro);background:rgba(255,197,42,.12);color:var(--ouro)}
+.opcoes input:focus-visible+span{outline:3px solid var(--ouro);outline-offset:2px}
+.opcoes.invalido span{border-color:var(--balao)}
+.erro{margin:0;color:#ff8a8d;font-size:.9rem}
+.form-diag .btn{margin-top:4px}
+.form-diag .btn[disabled]{opacity:.6;cursor:wait}
+.form-ok{text-align:center;padding:24px 0 8px}
+.form-ok h3{font-size:1.5rem;margin:16px 0 8px}
+.ok-icone{display:inline-grid;place-items:center;width:64px;height:64px;border-radius:50%;background:var(--ouro)}
+.ok-icone::after{content:"";width:14px;height:26px;border:solid #1a1200;border-width:0 4px 4px 0;transform:rotate(45deg) translate(-2px,-3px)}
 .cartao-diag .btn{width:100%}
 .cartao-diag .nota{margin-top:14px;text-align:center}
 @media(max-width:860px){.hero .wrap{grid-template-columns:1fr}}
@@ -304,7 +325,7 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
       <a href="#metodo">Método</a>
       <a href="#entregaveis">O que você recebe</a>
       <a href="#faq">Dúvidas</a>
-      <a class="btn btn-ouro" href="https://form.respondi.app/nUsJDYIP" target="_blank" rel="noopener">Solicitar Diagnóstico Gratuito</a>
+      <a class="btn btn-ouro" href="#diagnostico">Solicitar Diagnóstico Gratuito</a>
     </nav>
   </div>
 </header>
@@ -318,7 +339,7 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
         <span class="olho">Para donos de buffet e espaços de festas</span>
         <h1>Seu espaço com a agenda cheia de festas.</h1>
         <p class="lead">Levamos famílias com perfil de compra até o seu WhatsApp, filtramos quem só pede preço e ajudamos sua equipe a agendar a visita e fechar a festa.</p>
-        <a class="btn btn-ouro hero-cta" href="https://form.respondi.app/nUsJDYIP" target="_blank" rel="noopener">Solicitar Diagnóstico Gratuito</a>
+        <a class="btn btn-ouro hero-cta" href="#diagnostico">Solicitar Diagnóstico Gratuito</a>
         <ol class="caminho" aria-label="O caminho que a gente cuida">
           <li>Contato qualificado no WhatsApp</li>
           <li>Visita agendada</li>
@@ -333,14 +354,52 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
       <aside class="cartao-diag" id="diagnostico" aria-labelledby="diag-titulo">
         <span class="olho">Diagnóstico gratuito</span>
         <h2 id="diag-titulo">Descubra onde o seu espaço está perdendo festas.</h2>
-        <p>Responda 6 perguntas rápidas sobre o seu espaço e um especialista da Mais Festas analisa os três pilares do seu negócio:</p>
-        <ul class="checks">
-          <li><b>Demanda:</b> de onde vêm seus clientes e quantos contatos chegam</li>
-          <li><b>Marketing:</b> o que você já tentou e o que funcionou</li>
-          <li><b>Vendas:</b> quantos contatos visitam e quantos fecham</li>
-        </ul>
-        <a class="btn btn-ouro" href="https://form.respondi.app/nUsJDYIP" target="_blank" rel="noopener">Solicitar Diagnóstico Gratuito</a>
-        <p class="nota">Sem custo e sem compromisso.</p>
+        <form id="form-diag" class="form-diag" novalidate>
+          <label>Seu nome<input name="nome" autocomplete="name" required placeholder="Como podemos te chamar?"></label>
+          <label>WhatsApp<input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" required placeholder="(00) 00000-0000"></label>
+          <label>Instagram do seu espaço<input name="instagram" required placeholder="@seuespaco" autocapitalize="off"></label>
+          <label>Segmento
+            <select name="segmento" required>
+              <option value="" disabled selected>Selecione</option>
+              <option>Salão de Festa Infantil</option>
+              <option>Espaço de eventos (Sítio/Área/Chácara)</option>
+              <option>Buffet Itinerante (A domicílio)</option>
+              <option>Salão de casamento ou eventos em geral</option>
+              <option>Restaurante</option>
+              <option>Decoração</option>
+              <option>Pegue e monte</option>
+              <option>Locação / Aluguel do espaço</option>
+              <option>Banqueteiro</option>
+              <option>Ainda estou construindo / Pretendo construir</option>
+              <option>Outro</option>
+            </select>
+          </label>
+          <fieldset><legend>Possui espaço próprio?</legend>
+            <div class="opcoes"><label><input type="radio" name="possui_espaco" value="Sim" required><span>Sim</span></label><label><input type="radio" name="possui_espaco" value="Não"><span>Não</span></label></div>
+          </fieldset>
+          <label>Faturamento mensal
+            <select name="faturamento" required>
+              <option value="" disabled selected>Selecione</option>
+              <option>R$0 a R$5 mil</option>
+              <option>R$5 mil a R$10 mil</option>
+              <option>R$10 mil a R$30 mil</option>
+              <option>R$30 mil a R$50 mil</option>
+              <option>R$50 mil a R$100 mil</option>
+              <option>Acima de R$100 mil</option>
+            </select>
+          </label>
+          <fieldset id="campo-invest" hidden><legend>Você teria R$ 2.500 por mês para investir em vender mais?</legend>
+            <div class="opcoes"><label><input type="radio" name="investiria_2500" value="Sim"><span>Sim</span></label><label><input type="radio" name="investiria_2500" value="Não"><span>Não</span></label></div>
+          </fieldset>
+          <p class="erro" id="form-erro" role="alert" hidden></p>
+          <button class="btn btn-ouro" type="submit">Solicitar Diagnóstico Gratuito</button>
+          <p class="nota">Sem custo e sem compromisso. Leva menos de 1 minuto.</p>
+        </form>
+        <div class="form-ok" id="form-ok" hidden>
+          <span class="ok-icone" aria-hidden="true"></span>
+          <h3>Recebemos seus dados!</h3>
+          <p>Um especialista da Mais Festas vai chamar você no WhatsApp para marcar o diagnóstico.</p>
+        </div>
       </aside>
     </div>
   </div>
@@ -402,7 +461,7 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
       </div>
       <p class="arraste" aria-hidden="true">Arraste para o lado para ver mais →</p>
       <div class="cta-sec">
-        <a class="btn btn-ouro" href="https://form.respondi.app/nUsJDYIP" target="_blank" rel="noopener">Solicitar Diagnóstico Gratuito</a>
+        <a class="btn btn-ouro" href="#diagnostico">Solicitar Diagnóstico Gratuito</a>
         <span>Seu espaço pode ser o próximo resultado.</span>
       </div>
     </div>
@@ -437,7 +496,7 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
         <figure><img src="assets/micael-palestra.jpg" alt="Micael falando para donos de buffet na imersão da Mais Festas" width="1400" height="1050" loading="lazy"><figcaption>Micael na imersão com donos de buffet</figcaption></figure>
       </div>
       <div class="cta-sec">
-        <a class="btn btn-ouro" href="https://form.respondi.app/nUsJDYIP" target="_blank" rel="noopener">Solicitar Diagnóstico Gratuito</a>
+        <a class="btn btn-ouro" href="#diagnostico">Solicitar Diagnóstico Gratuito</a>
         <span>Fale com quem nasceu dentro de um buffet.</span>
       </div>
     </div>
@@ -464,7 +523,7 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
         <div class="passo"><b>4. Fechamento</b><h3>A data vai para a agenda</h3><p>Ajudamos a conduzir a visita e o follow-up até o sim, com relatório de quanto cada real investido devolveu.</p></div>
       </div>
       <div class="cta-sec">
-        <a class="btn btn-ouro" href="https://form.respondi.app/nUsJDYIP" target="_blank" rel="noopener">Solicitar Diagnóstico Gratuito</a>
+        <a class="btn btn-ouro" href="#diagnostico">Solicitar Diagnóstico Gratuito</a>
         <span>Descubra em qual etapa o seu espaço perde festas.</span>
       </div>
     </div>
@@ -522,7 +581,7 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
         </article>
       </div>
       <div class="cta-sec">
-        <a class="btn btn-ouro" href="https://form.respondi.app/nUsJDYIP" target="_blank" rel="noopener">Solicitar Diagnóstico Gratuito</a>
+        <a class="btn btn-ouro" href="#diagnostico">Solicitar Diagnóstico Gratuito</a>
         <span>Sem custo e sem compromisso.</span>
       </div>
     </div>
@@ -571,7 +630,7 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
         <h2>Solicite seu diagnóstico gratuito.</h2>
         <p class="lead" style="margin-top:16px">Responda algumas perguntas rápidas sobre o seu espaço para começar.</p>
       </div>
-      <a class="btn btn-ouro" href="https://form.respondi.app/nUsJDYIP" target="_blank" rel="noopener">Solicitar Diagnóstico Gratuito</a>
+      <a class="btn btn-ouro" href="#diagnostico">Solicitar Diagnóstico Gratuito</a>
     </div>
   </section>
 </main>
@@ -599,13 +658,11 @@ const WHATSAPP = "5517991831471";
 document.getElementById("zap").href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent("Olá! Vim pelo site da Mais Festas e quero saber mais.")}`;
 
 // rastreamento: guarda todos os parâmetros da URL (utm_*, gclid, fbclid etc.),
-// a página de entrada e a origem, e repassa tudo para o formulário do Respondi
-(function () {
+// a página de entrada e a origem, e envia junto com o formulário
+const ORIGEM = (function () {
   const KEY = "mf_origem";
   let salvo = {};
   try { salvo = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) {}
-
-  // primeiro contato: só grava uma vez
   if (!salvo.primeiro) {
     salvo.primeiro = {
       pagina_entrada: location.origin + location.pathname,
@@ -613,8 +670,6 @@ document.getElementById("zap").href = `https://wa.me/${WHATSAPP}?text=${encodeUR
       data_primeira_visita: new Date().toISOString()
     };
   }
-
-  // último contato: todo parâmetro da URL atual sobrescreve o anterior
   const atual = {};
   new URLSearchParams(location.search).forEach((v, k) => { if (v) atual[k.slice(0, 60)] = v.slice(0, 300); });
   if (Object.keys(atual).length) {
@@ -622,14 +677,75 @@ document.getElementById("zap").href = `https://wa.me/${WHATSAPP}?text=${encodeUR
     salvo.params_url_completa = location.href;
   }
   try { localStorage.setItem(KEY, JSON.stringify(salvo)); } catch (e) {}
-
   const dados = Object.assign({}, salvo.params, salvo.primeiro);
   if (salvo.params_url_completa) dados.url_com_parametros = salvo.params_url_completa;
+  return dados;
+})();
 
-  document.querySelectorAll('a[href^="https://form.respondi.app/"]').forEach(a => {
-    const u = new URL(a.href);
-    Object.entries(dados).forEach(([k, v]) => u.searchParams.set(k, v));
-    a.href = u.toString();
+// formulário de diagnóstico → planilha "Leads - LP Mais Festas" (Google Apps Script)
+const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4CJNmHAuvAVcX_tXJNq2GYyWgtjwREYuKhuCItTSY5YDajRkrHv8/exec";
+(function () {
+  const f = document.getElementById("form-diag");
+  const campoInvest = document.getElementById("campo-invest");
+  const erro = document.getElementById("form-erro");
+  const FAIXAS = ["R$0 a R$5 mil", "R$5 mil a R$10 mil", "R$10 mil a R$30 mil", "R$30 mil a R$50 mil", "R$50 mil a R$100 mil", "Acima de R$100 mil"];
+  const val = n => { const el = f.elements[n]; return el ? (el.value || "").trim() : ""; };
+  const faixa = () => FAIXAS.indexOf(val("faturamento"));
+  const temEspaco = () => val("possui_espaco") === "Sim" || val("segmento") === "Salão de Festa Infantil";
+  // pergunta dos R$ 2.500: fatura abaixo de R$ 10 mil, não é salão de festa e não tem espaço
+  const precisaInvest = () => faixa() > -1 && faixa() <= 1 && val("segmento") !== "Salão de Festa Infantil" && val("possui_espaco") === "Não";
+  const classificar = () => {
+    if (precisaInvest() && val("investiria_2500") === "Não") return "D";
+    if (temEspaco() && faixa() >= 4) return "A";
+    if (temEspaco() && faixa() === 3) return "B";
+    return "C";
+  };
+
+  f.addEventListener("change", () => {
+    campoInvest.hidden = !precisaInvest();
+    if (campoInvest.hidden) f.querySelectorAll('[name="investiria_2500"]').forEach(r => r.checked = false);
+  });
+
+  // máscara simples de WhatsApp: (00) 00000-0000
+  f.elements.whatsapp.addEventListener("input", e => {
+    const d = e.target.value.replace(/\D/g, "").slice(0, 11);
+    e.target.value = d.length > 6 ? `(${d.slice(0, 2)}) ${d.slice(2, d.length - 4)}-${d.slice(-4)}` : d.length > 2 ? `(${d.slice(0, 2)}) ${d.slice(2)}` : d;
+  });
+
+  f.addEventListener("submit", async e => {
+    e.preventDefault();
+    erro.hidden = true;
+    f.querySelectorAll(".invalido").forEach(el => el.classList.remove("invalido"));
+    const faltando = [];
+    ["nome", "instagram"].forEach(n => { if (!val(n)) faltando.push(f.elements[n]); });
+    if (val("whatsapp").replace(/\D/g, "").length < 10) faltando.push(f.elements.whatsapp);
+    ["segmento", "faturamento"].forEach(n => { if (!val(n)) faltando.push(f.elements[n]); });
+    if (!val("possui_espaco")) faltando.push(f.querySelector('[name="possui_espaco"]').closest(".opcoes"));
+    if (precisaInvest() && !val("investiria_2500")) faltando.push(campoInvest.querySelector(".opcoes"));
+    if (faltando.length) {
+      faltando.forEach(el => el.classList.add("invalido"));
+      erro.textContent = "Preencha os campos destacados para continuar.";
+      erro.hidden = false;
+      (faltando[0].focus ? faltando[0] : faltando[0].querySelector("input")).focus();
+      return;
+    }
+    const dados = Object.assign({}, ORIGEM, {
+      nome: val("nome"), whatsapp: val("whatsapp"), instagram: val("instagram"),
+      segmento: val("segmento"), possui_espaco: val("possui_espaco"), faturamento: val("faturamento"),
+      investiria_2500: precisaInvest() ? val("investiria_2500") : "", classificacao: classificar()
+    });
+    const bt = f.querySelector("button[type=submit]");
+    bt.disabled = true; bt.textContent = "Enviando...";
+    try {
+      await fetch(ENDPOINT_LEADS, { method: "POST", mode: "no-cors", body: new URLSearchParams(dados) });
+      f.hidden = true;
+      document.getElementById("form-ok").hidden = false;
+      if (window.fbq) fbq("track", "Lead", { classificacao: dados.classificacao });
+    } catch (err) {
+      bt.disabled = false; bt.textContent = "Solicitar Diagnóstico Gratuito";
+      erro.textContent = "Não conseguimos enviar agora. Tente de novo ou chame a gente no WhatsApp.";
+      erro.hidden = false;
+    }
   });
 })();
 
