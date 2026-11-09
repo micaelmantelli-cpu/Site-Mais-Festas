@@ -223,24 +223,17 @@ section{padding-block:clamp(64px,9vw,120px)}
 .pilares b{color:var(--ouro)}
 .trilha{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding-top:84px}
 .trilha::before{content:"";position:absolute;left:0;right:0;top:56px;height:2px;background:var(--linha)}
-.trilha::after{content:"";position:absolute;left:0;top:56px;height:2px;width:0;background:var(--ouro);transition:width 5s cubic-bezier(.3,.7,.2,1)}
-.trilha.ativa::after{width:100%}
+.trilha::after{content:"";position:absolute;left:0;top:56px;height:2px;width:var(--fill,0px);background:var(--ouro)}
 .passo{position:relative}
-.passo::before{content:"";position:absolute;top:-35px;left:0;width:14px;height:14px;border-radius:50%;background:var(--carvao);border:2px solid var(--linha);transition:background .4s,border-color .4s}
-.trilha.ativa .passo::before{background:var(--ouro);border-color:var(--ouro)}
-.trilha.ativa .passo:nth-child(1)::before{transition-delay:.2s}
-.trilha.ativa .passo:nth-child(2)::before{transition-delay:1.7s}
-.trilha.ativa .passo:nth-child(3)::before{transition-delay:3.4s}
-.trilha.ativa .passo:nth-child(4)::before{transition-delay:4.8s}
+.passo::before{content:"";position:absolute;top:-35px;left:0;width:14px;height:14px;border-radius:50%;background:var(--carvao);border:2px solid var(--linha);transition:background .3s,border-color .3s,box-shadow .3s}
+.passo.on::before{background:var(--ouro);border-color:var(--ouro);box-shadow:0 0 0 6px rgba(255,197,42,.18)}
 .passo b{display:block;color:var(--ouro);font-weight:800;margin-bottom:6px}
 .passo p{color:var(--suave);font-size:.98rem;margin-top:8px}
-.balao{position:absolute;top:-26px;left:0;width:52px;height:auto;transform:translate(-8px,0);transition:left 5s cubic-bezier(.3,.7,.2,1);filter:drop-shadow(0 8px 12px rgba(0,0,0,.5))}
-.trilha.ativa .balao{left:calc(100% - 44px)}
+.balao{position:absolute;top:-30px;left:0;width:52px;height:auto;transform:translateX(var(--bx,-19px));filter:drop-shadow(0 8px 12px rgba(0,0,0,.5));pointer-events:none}
 @media(max-width:760px){
   .trilha{grid-template-columns:1fr;padding:0 0 0 44px;gap:32px;margin-top:40px}
   .trilha::before,.trilha::after{left:6px;right:auto;top:0;bottom:0;width:2px;height:auto}
-  .trilha::after{height:0;width:2px;transition:height 5s}
-  .trilha.ativa::after{height:100%;width:2px}
+  .trilha::after{height:var(--fill,0px);width:2px}
   .passo::before{left:-45px;top:8px}
   .balao{display:none}
 }
@@ -751,13 +744,47 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
   });
 })();
 
-// método: a trilha anima uma vez quando entra na tela
-const trilha = document.getElementById("trilha");
-if ("IntersectionObserver" in window) {
-  new IntersectionObserver((e, o) => {
-    if (e[0].isIntersecting) { trilha.classList.add("ativa"); o.disconnect(); }
-  }, { threshold: .4 }).observe(trilha);
-} else trilha.classList.add("ativa");
+// método: o alvo anda de bolinha em bolinha; a linha acompanha e cada bolinha acende quando ele chega.
+// a posição é calculada pelo relógio a cada quadro, então nunca sai de sincronia.
+(function () {
+  const trilha = document.getElementById("trilha");
+  const passos = [...trilha.querySelectorAll(".passo")];
+  const balao = trilha.querySelector(".balao");
+  const reduz = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const MOVE = 700, PAUSA = 450, SEG = MOVE + PAUSA;           // ms por trecho
+  const vertical = () => getComputedStyle(trilha).gridTemplateColumns.trim().split(/\s+/).length === 1;
+  const centro = i => vertical() ? passos[i].offsetTop + 15 : passos[i].offsetLeft + 7;
+  const suave = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+  let inicio = null, ultimoT = -1;
+
+  const desenha = t => {                                       // t = ms desde o início
+    ultimoT = t;
+    const n = passos.length;
+    // trecho i: vai da bolinha i-1 até a i entre i*SEG e i*SEG+MOVE (o trecho 0 só acende a primeira)
+    let pos = centro(0), fill = 0;
+    for (let i = 0; i < n; i++) {
+      const ini = i * SEG, fim = ini + (i === 0 ? 0 : MOVE);
+      if (t >= fim) { pos = centro(i); fill = centro(i); passos[i].classList.add("on"); }
+      else if (t > ini) { const k = suave((t - ini) / MOVE); pos = fill = centro(i - 1) + (centro(i) - centro(i - 1)) * k; }
+    }
+    trilha.style.setProperty("--fill", fill + "px");
+    if (balao) trilha.style.setProperty("--bx", (pos - balao.offsetWidth / 2) + "px");
+    return t < (n - 1) * SEG + MOVE;
+  };
+  const quadro = agora => {
+    if (inicio === null) inicio = agora;
+    if (desenha(agora - inicio)) requestAnimationFrame(quadro);
+  };
+
+  if (balao) trilha.style.setProperty("--bx", (centro(0) - balao.offsetWidth / 2) + "px");
+  addEventListener("resize", () => { if (ultimoT >= 0) desenha(ultimoT); });
+  const comeca = () => reduz ? desenha(1e9) : requestAnimationFrame(quadro);
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver((e, o) => {
+      if (e[0].isIntersecting) { o.disconnect(); setTimeout(comeca, 250); }
+    }, { threshold: .4 }).observe(trilha);
+  } else comeca();
+})();
 
 // entregáveis: setas do carrossel
 document.querySelectorAll(".trilho[id]").forEach(t => {
