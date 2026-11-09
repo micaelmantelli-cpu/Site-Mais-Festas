@@ -691,9 +691,11 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
   const FAIXAS = ["R$0 a R$5 mil", "R$5 mil a R$10 mil", "R$10 mil a R$30 mil", "R$30 mil a R$50 mil", "R$50 mil a R$100 mil", "Acima de R$100 mil"];
   const val = n => { const el = f.elements[n]; return el ? (el.value || "").trim() : ""; };
   const faixa = () => FAIXAS.indexOf(val("faturamento"));
-  const temEspaco = () => val("possui_espaco") === "Sim" || val("segmento") === "Salão de Festa Infantil";
-  // pergunta dos R$ 2.500: fatura abaixo de R$ 10 mil, não é salão de festa e não tem espaço
-  const precisaInvest = () => faixa() > -1 && faixa() <= 1 && val("segmento") !== "Salão de Festa Infantil" && val("possui_espaco") === "Não";
+  const SALOES = ["Salão de Festa Infantil", "Salão de casamento ou eventos em geral"];
+  const ehSalao = () => SALOES.includes(val("segmento"));
+  const temEspaco = () => val("possui_espaco") === "Sim" || ehSalao();
+  // pergunta dos R$ 2.500: fatura abaixo de R$ 10 mil e não é salão de festa infantil nem salão de eventos
+  const precisaInvest = () => faixa() > -1 && faixa() <= 1 && val("segmento") !== "" && !ehSalao();
   const classificar = () => {
     if (precisaInvest() && val("investiria_2500") === "Não") return "D";
     if (temEspaco() && faixa() >= 4) return "A";
