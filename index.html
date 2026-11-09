@@ -149,10 +149,6 @@ header .btn{min-height:42px;padding:0 20px;font-size:.92rem}
 .erro{margin:0;color:#ff8a8d;font-size:.9rem}
 .form-diag .btn{margin-top:4px}
 .form-diag .btn[disabled]{opacity:.6;cursor:wait}
-.form-ok{text-align:center;padding:24px 0 8px}
-.form-ok h3{font-size:1.5rem;margin:16px 0 8px}
-.ok-icone{display:inline-grid;place-items:center;width:64px;height:64px;border-radius:50%;background:var(--ouro)}
-.ok-icone::after{content:"";width:14px;height:26px;border:solid #1a1200;border-width:0 4px 4px 0;transform:rotate(45deg) translate(-2px,-3px)}
 .cartao-diag .btn{width:100%}
 .cartao-diag .nota{margin-top:14px;text-align:center}
 @media(max-width:860px){.hero .wrap{grid-template-columns:1fr}}
@@ -395,11 +391,6 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
           <button class="btn btn-ouro" type="submit">Solicitar Diagnóstico Gratuito</button>
           <p class="nota">Sem custo e sem compromisso. Leva menos de 1 minuto.</p>
         </form>
-        <div class="form-ok" id="form-ok" hidden>
-          <span class="ok-icone" aria-hidden="true"></span>
-          <h3>Recebemos seus dados!</h3>
-          <p>Um especialista da Mais Festas vai chamar você no WhatsApp para marcar o diagnóstico.</p>
-        </div>
       </aside>
     </div>
   </div>
@@ -700,7 +691,8 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
   // pergunta dos R$ 2.500: fatura abaixo de R$ 10 mil e não é salão de festa infantil nem salão de eventos
   const precisaInvest = () => faixa() > -1 && faixa() <= 1 && val("segmento") !== "" && !ehSalao();
   const classificar = () => {
-    if (precisaInvest() && val("investiria_2500") === "Não") return "D";
+    // fatura abaixo de R$ 10 mil e não é salão: D se tem os R$ 2.500, E se não tem
+    if (precisaInvest()) return val("investiria_2500") === "Sim" ? "D" : "E";
     if (temEspaco() && faixa() >= 4) return "A";
     if (temEspaco() && faixa() === 3) return "B";
     return "C";
@@ -747,9 +739,10 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
     bt.disabled = true; bt.textContent = "Enviando...";
     try {
       await fetch(ENDPOINT_LEADS, { method: "POST", mode: "no-cors", body: new URLSearchParams(dados) });
-      f.hidden = true;
-      document.getElementById("form-ok").hidden = false;
       if (window.fbq) fbq("track", "Lead", { classificacao: dados.classificacao });
+      // cada grupo vai para a sua página de obrigado
+      const OBRIGADO = { A: "obrigado.html", B: "obrigado.html", C: "obrigado.html", D: "obrigado-contato.html", E: "obrigado-conteudo.html" };
+      location.href = OBRIGADO[dados.classificacao] || "obrigado.html";
     } catch (err) {
       bt.disabled = false; bt.textContent = "Solicitar Diagnóstico Gratuito";
       erro.textContent = "Não conseguimos enviar agora. Tente de novo ou chame a gente no WhatsApp.";
