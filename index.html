@@ -173,14 +173,18 @@ section{padding-block:clamp(64px,9vw,120px)}
 .case-logo.redondo{width:76px;border-radius:50%}
 .case-logo-texto{display:block;width:96px;height:auto;border-radius:8px;margin-bottom:14px}
 .case-logo{position:absolute;top:14px;left:14px;width:96px;height:auto;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+.arraste{display:none;margin:12px 0 0;color:var(--suave);font-size:.85rem}
 @media(max-width:1000px){
-  .cases{grid-template-columns:1fr 1fr}
-  .cases>:last-child{grid-column:1/-1}
+  .cases{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:46%;align-items:start;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px}
+  .cases>*{scroll-snap-align:start}
+  .arraste-cases{display:block}
 }
 @media(max-width:760px){
-  .videos{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:72%;justify-content:start;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px}
+  .videos{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:72%;justify-content:start;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;margin-bottom:0}
   .videos>*{scroll-snap-align:start}
-  .cases{grid-template-columns:1fr}
+  .arraste{display:block}
+  .arraste-videos{margin-bottom:44px}
+  .cases{grid-auto-columns:86%}
 }
 
 /* 4. quem somos */
@@ -373,6 +377,7 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
           <figcaption><strong>R$ 183 mil em festas com R$ 1,5 mil em anúncios</strong><span>Rafa · dono de buffet</span></figcaption>
         </figure>
       </div>
+      <p class="arraste arraste-videos" aria-hidden="true">Arraste para o lado para ver mais →</p>
       <div class="cases">
         <div class="case case-foto">
           <img src="assets/vem-pra-ka.jpg" alt="Karina, dona do Vem Pra Ká Espaço Kids e Eventos" width="640" height="490" loading="lazy">
@@ -402,6 +407,7 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
           </div>
         </div>
       </div>
+      <p class="arraste arraste-cases" aria-hidden="true">Arraste para o lado para ver mais →</p>
       <div class="cta-sec">
         <a class="btn btn-ouro" href="https://form.respondi.app/nUsJDYIP" target="_blank" rel="noopener">Solicitar Diagnóstico Gratuito</a>
         <span>Seu espaço pode ser o próximo resultado.</span>
