@@ -204,6 +204,8 @@ section{padding-block:clamp(64px,9vw,120px)}
 .case-foto>img{width:100%;height:auto;aspect-ratio:392/300;object-fit:cover}
 .case-foto>div:last-child{padding:24px 28px 28px}
 .case-logo.redondo{width:76px;border-radius:50%}
+.case-logo-painel{display:grid;place-items:center;aspect-ratio:392/300;background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.07),transparent 70%)}
+.case-logo-painel img{width:150px;height:150px;border-radius:50%;box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .case-logo-texto{display:block;width:96px;height:auto;border-radius:8px;margin-bottom:14px}
 .case-logo{position:absolute;top:14px;left:14px;width:96px;height:auto;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.4)}
 .trilho.dep-trilho{grid-auto-columns:280px;align-items:start}
@@ -420,9 +422,12 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
       </div>
       <!-- depoimentos em vídeo (cliente real, sem roteiro) e cases, num carrossel só -->
       <div class="trilho dep-trilho" id="trilho-dep" tabindex="0" aria-label="Resultados de clientes">
+        <figure class="dep">
+          <div class="dep-video"><video preload="none" playsinline poster="assets/depoimentos/spazio-deline-gancho.jpg" src="assets/depoimentos/spazio-deline-gancho.mp4"></video><button type="button" aria-label="Assistir ao depoimento do Spazio Deline"><i></i></button></div>
+          <figcaption><strong>Mais que dobrou: de 7 para 15 contratos em um mês</strong><span>Isabel · Spazio Deline, Caieiras (SP)</span></figcaption>
+        </figure>
         <div class="case case-foto">
-          <img src="assets/vem-pra-ka.jpg" alt="Karina, dona do Vem Pra Ká Espaço Kids e Eventos" width="640" height="490" loading="lazy">
-          <img class="case-logo redondo" src="assets/vem-pra-ka-logo.png" alt="Vem Pra Ká Espaço Kids e Eventos" width="180" height="180" loading="lazy">
+          <div class="case-logo-painel"><img src="assets/vem-pra-ka-logo.png" alt="Vem Pra Ká Espaço Kids e Eventos" width="180" height="180" loading="lazy"></div>
           <div>
             <span class="olho">Vem Pra Ká · Espaço Kids e Eventos</span>
             <strong>R$ 114 mil em vendas no 2º mês</strong>
@@ -430,11 +435,7 @@ dialog .fechar{position:absolute;top:10px;right:10px;z-index:2;width:44px;height
           </div>
         </div>
         <figure class="dep">
-          <div class="dep-video"><video preload="none" playsinline poster="assets/depoimentos/spazio-deline.jpg" src="assets/depoimentos/spazio-deline.mp4"></video><button type="button" aria-label="Assistir ao depoimento do Spazio Deline"><i></i></button></div>
-          <figcaption><strong>Mais que dobrou: de 7 para 15 contratos em um mês</strong><span>Isabel · Spazio Deline, Caieiras (SP)</span></figcaption>
-        </figure>
-        <figure class="dep">
-          <div class="dep-video"><video preload="none" playsinline poster="assets/depoimentos/ameliane-emocao.jpg" src="assets/depoimentos/ameliane-emocao.mp4"></video><button type="button" aria-label="Assistir ao vídeo de Ameliane e Ana Amélia no Castelo dos Sonhos"><i></i></button></div>
+          <div class="dep-video"><video preload="none" playsinline poster="assets/depoimentos/ameliane-gancho.jpg" src="assets/depoimentos/ameliane-gancho.mp4"></video><button type="button" aria-label="Assistir ao vídeo de Ameliane e Ana Amélia no Castelo dos Sonhos"><i></i></button></div>
           <figcaption><strong>A emoção de viver por dentro a operação do Castelo dos Sonhos</strong><span>Ameliane e Ana Amélia · salão de festas em Cajuru (SP)</span></figcaption>
         </figure>
         <div class="case case-foto">
