@@ -38,6 +38,22 @@ p{color:#d9d1c2;margin:0 auto 14px;max-width:52ch}
 .passos small{display:block;color:#25D366;font-weight:800;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase}
 footer{text-align:center;color:var(--suave);font-size:.85rem;padding:0 20px 40px}
 </style>
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '887741797126074');
+fbq('track', 'PageView');
+fbq('track', 'Lead');                 // lead qualificado (A, B ou C)
+document.addEventListener('click', function (e) {
+  if (e.target.closest('[data-zap]')) fbq('track', 'Contact');
+});
+</script>
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=887741797126074&ev=PageView&noscript=1"></noscript>
+<!-- fim Meta Pixel -->
 </head>
 <body data-abertura="Acabei de preencher o formulário no site da Mais Festas e quero vender mais festas.">
 <header><a href="./"><img src="assets/logo.webp" alt="Mais Festas" width="55" height="42"></a></header>
