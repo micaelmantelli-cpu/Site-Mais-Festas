@@ -737,6 +737,44 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
     if (campoInvest.hidden) f.querySelectorAll('[name="investiria_2500"]').forEach(r => r.checked = false);
   });
 
+  // rastreio do formulário no Pixel (eventos personalizados, nenhum conta como Lead):
+  // FormVisto → FormInicio → FormCampo (um por campo) → FormErro / FormEnvio; FormAbandono se sair no meio
+  const UA = navigator.userAgent;
+  const NAVEGADOR = /Instagram/i.test(UA) ? "instagram" : /FBAN|FBAV|FB_IAB/i.test(UA) ? "facebook" : "outro";
+  const rastreia = (nome, extra) => { try { fbq("trackCustom", nome, Object.assign({ navegador: NAVEGADOR }, extra)); } catch (e) {} };
+  const ORDEM = ["nome", "whatsapp", "instagram", "segmento", "possui_espaco", "faturamento", "investiria_2500"];
+  const preenchidos = new Set();
+  let iniciou = false, enviou = false, saiu = false, ultimo = "";
+  if ("IntersectionObserver" in window) {
+    const obs = new IntersectionObserver(es => { if (es.some(x => x.isIntersecting)) { rastreia("FormVisto"); obs.disconnect(); } }, { threshold: .5 });
+    obs.observe(f);
+  }
+  const marcaInicio = e => {
+    const campo = e.target && e.target.name;
+    if (!campo || iniciou) return;
+    iniciou = true; rastreia("FormInicio", { campo });
+  };
+  f.addEventListener("focusin", marcaInicio);
+  f.addEventListener("input", marcaInicio);
+  const marcaCampo = e => {
+    const campo = e.target && e.target.name;
+    if (!campo || !ORDEM.includes(campo)) return;
+    ultimo = campo;
+    const ok = campo === "whatsapp" ? val(campo).replace(/\D/g, "").length >= 10 : !!val(campo);
+    if (!ok || preenchidos.has(campo)) return;
+    preenchidos.add(campo);
+    rastreia("FormCampo", { campo, posicao: ORDEM.indexOf(campo) + 1, total_preenchidos: preenchidos.size });
+  };
+  f.addEventListener("change", marcaCampo);
+  f.addEventListener("focusout", marcaCampo);
+  const abandono = () => {
+    if (!iniciou || enviou || saiu) return;
+    saiu = true;
+    rastreia("FormAbandono", { ultimo_campo: ultimo || "nenhum", total_preenchidos: preenchidos.size, campos: [...preenchidos].join(",") });
+  };
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") abandono(); });
+  addEventListener("pagehide", abandono);
+
   // máscara simples de WhatsApp: (00) 00000-0000
   f.elements.whatsapp.addEventListener("input", e => {
     const d = e.target.value.replace(/\D/g, "").slice(0, 11);
@@ -757,6 +795,7 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
       faltando.forEach(el => el.classList.add("invalido"));
       erro.textContent = "Preencha os campos destacados para continuar.";
       erro.hidden = false;
+      rastreia("FormErro", { faltando: faltando.map(el => el.name || (el.querySelector("input") || {}).name || "?").join(","), total_preenchidos: preenchidos.size });
       (faltando[0].focus ? faltando[0] : faltando[0].querySelector("input")).focus();
       return;
     }
@@ -767,6 +806,8 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
     });
     const bt = f.querySelector("button[type=submit]");
     bt.disabled = true; bt.textContent = "Enviando...";
+    enviou = true;
+    rastreia("FormEnvio", { classificacao: dados.classificacao, segmento: dados.segmento, faturamento: dados.faturamento });
     try {
       await fetch(ENDPOINT_LEADS, { method: "POST", mode: "no-cors", body: new URLSearchParams(dados) });
       try { sessionStorage.setItem("mf_lead", JSON.stringify({ nome: dados.nome, instagram: dados.instagram })); } catch (e) {}
@@ -774,6 +815,7 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
       const OBRIGADO = { A: "obrigado.html", B: "obrigado.html", C: "obrigado.html", D: "obrigado-contato.html", E: "obrigado-conteudo.html" };
       location.href = OBRIGADO[dados.classificacao] || "obrigado.html";
     } catch (err) {
+      enviou = false;
       bt.disabled = false; bt.textContent = "Quero vender mais festas";
       erro.textContent = "Não conseguimos enviar agora. Tente de novo ou chame a gente no WhatsApp.";
       erro.hidden = false;
