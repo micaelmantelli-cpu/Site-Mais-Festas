@@ -670,6 +670,13 @@ fbq('track', 'PageView');
 // WhatsApp comercial: só números, com DDI+DDD
 const WHATSAPP = "5517991831471";
 document.getElementById("zap").href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent("Olá! Vim pelo site da Mais Festas e quero saber mais.")}`;
+// clique no botão flutuante do WhatsApp → Pixel: Contact (padrão) + WhatsAppBotao (para contar separado das páginas de obrigado)
+document.getElementById("zap").addEventListener("click", () => {
+  try {
+    fbq("track", "Contact", { content_name: "botao_flutuante_lp" });
+    fbq("trackCustom", "WhatsAppBotao", { navegador: /Instagram/i.test(navigator.userAgent) ? "instagram" : /FBAN|FBAV|FB_IAB/i.test(navigator.userAgent) ? "facebook" : "outro", rolagem: Math.round(100 * scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)) });
+  } catch (e) {}
+});
 
 // rastreamento: guarda todos os parâmetros da URL (utm_*, gclid, fbclid etc.),
 // a página de entrada e a origem, e envia junto com o formulário
