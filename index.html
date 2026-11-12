@@ -335,6 +335,14 @@ fbq('track', 'PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=887741797126074&ev=PageView&noscript=1"></noscript>
 <!-- fim Meta Pixel -->
+<!-- Microsoft Clarity (gravações e mapas de calor) -->
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "zcphcoqhv2");
+</script>
 </head>
 <body>
 
@@ -748,7 +756,10 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
   // FormVisto → FormInicio → FormCampo (um por campo) → FormErro / FormEnvio; FormAbandono se sair no meio
   const UA = navigator.userAgent;
   const NAVEGADOR = /Instagram/i.test(UA) ? "instagram" : /FBAN|FBAV|FB_IAB/i.test(UA) ? "facebook" : "outro";
-  const rastreia = (nome, extra) => { try { fbq("trackCustom", nome, Object.assign({ navegador: NAVEGADOR }, extra)); } catch (e) {} };
+  const rastreia = (nome, extra) => {
+    try { fbq("trackCustom", nome, Object.assign({ navegador: NAVEGADOR }, extra)); } catch (e) {}
+    try { if (nome !== "FormCampo") clarity("event", nome); } catch (e) {}   // filtro de gravações no Clarity
+  };
   const ORDEM = ["nome", "whatsapp", "instagram", "segmento", "possui_espaco", "faturamento", "investiria_2500"];
   const preenchidos = new Set();
   let iniciou = false, enviou = false, saiu = false, ultimo = "";
@@ -815,6 +826,7 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
     bt.disabled = true; bt.textContent = "Enviando...";
     enviou = true;
     rastreia("FormEnvio", { classificacao: dados.classificacao, segmento: dados.segmento, faturamento: dados.faturamento });
+    try { clarity("set", "classificacao", dados.classificacao); } catch (e) {}
     try {
       await fetch(ENDPOINT_LEADS, { method: "POST", mode: "no-cors", body: new URLSearchParams(dados) });
       try { sessionStorage.setItem("mf_lead", JSON.stringify({ nome: dados.nome, instagram: dados.instagram })); } catch (e) {}
