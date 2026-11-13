@@ -405,7 +405,7 @@ fbq('track', 'PageView');
           <fieldset id="campo-espaco"><legend>Possui espaço próprio?</legend>
             <div class="opcoes"><label><input type="radio" name="possui_espaco" value="Sim" required><span>Sim</span></label><label><input type="radio" name="possui_espaco" value="Não"><span>Não</span></label></div>
           </fieldset>
-          <label>Faturamento mensal
+          <label id="campo-faturamento">Faturamento mensal
             <select name="faturamento" required>
               <option value="" disabled selected>Selecione</option>
               <option>R$0 a R$5 mil</option>
@@ -726,17 +726,22 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
   const campoEspaco = document.getElementById("campo-espaco");
   const ehSalao = () => SALOES.includes(val("segmento"));
   const temEspaco = () => val("possui_espaco") === "Sim" || ehSalao();
+  // quem ainda vai construir não responde faturamento nem os R$ 2.500 e vira C (pedido do Micael, 2026-11-13)
+  const CONSTRUINDO = "Ainda estou construindo / Pretendo construir";
+  const construindo = () => val("segmento") === CONSTRUINDO;
+  const campoFat = document.getElementById("campo-faturamento");
   // pergunta dos R$ 2.500 (quem não está qualificado):
   //  - fatura abaixo de R$ 10 mil e não é salão de festa infantil nem salão de eventos, ou
   //  - não tem espaço e fatura abaixo de R$ 30 mil
   const precisaInvest = () => {
     const fx = faixa();
-    if (fx < 0 || val("segmento") === "") return false;
+    if (fx < 0 || val("segmento") === "" || construindo()) return false;
     if (fx <= 1 && !ehSalao()) return true;
     return val("possui_espaco") === "Não" && !temEspaco() && fx <= 2;
   };
   const classificar = () => {
     // não qualificado (ver precisaInvest): D se tem os R$ 2.500, E se não tem
+    if (construindo()) return "C";
     if (precisaInvest()) return val("investiria_2500") === "Sim" ? "D" : "E";
     if (temEspaco() && faixa() >= 4) return "A";
     if (temEspaco() && faixa() === 3) return "B";
@@ -748,6 +753,8 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
     if (jaTemEspaco) f.querySelector('[name="possui_espaco"][value="Sim"]').checked = true;
     else if (campoEspaco.hidden) f.querySelectorAll('[name="possui_espaco"]').forEach(r => r.checked = false); // saiu de um salão: pede a resposta de novo
     campoEspaco.hidden = jaTemEspaco;
+    campoFat.hidden = construindo();
+    if (campoFat.hidden) f.elements.faturamento.value = "";
     campoInvest.hidden = !precisaInvest();
     if (campoInvest.hidden) f.querySelectorAll('[name="investiria_2500"]').forEach(r => r.checked = false);
   });
@@ -806,7 +813,8 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
     const faltando = [];
     ["nome", "instagram"].forEach(n => { if (!val(n)) faltando.push(f.elements[n]); });
     if (val("whatsapp").replace(/\D/g, "").length < 10) faltando.push(f.elements.whatsapp);
-    ["segmento", "faturamento"].forEach(n => { if (!val(n)) faltando.push(f.elements[n]); });
+    if (!val("segmento")) faltando.push(f.elements.segmento);
+    if (!construindo() && !val("faturamento")) faltando.push(f.elements.faturamento);
     if (!val("possui_espaco")) faltando.push(f.querySelector('[name="possui_espaco"]').closest(".opcoes"));
     if (precisaInvest() && !val("investiria_2500")) faltando.push(campoInvest.querySelector(".opcoes"));
     if (faltando.length) {
@@ -819,7 +827,7 @@ const ENDPOINT_LEADS = "https://script.google.com/macros/s/AKfycbyjhtjoA8VC3Vtg4
     }
     const dados = Object.assign({}, ORIGEM, {
       nome: val("nome"), whatsapp: val("whatsapp"), instagram: val("instagram"),
-      segmento: val("segmento"), possui_espaco: val("possui_espaco"), faturamento: val("faturamento"),
+      segmento: val("segmento"), possui_espaco: val("possui_espaco"), faturamento: construindo() ? "Não se aplica (construindo)" : val("faturamento"),
       investiria_2500: precisaInvest() ? val("investiria_2500") : "", classificacao: classificar()
     });
     const bt = f.querySelector("button[type=submit]");
